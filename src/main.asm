@@ -3,6 +3,7 @@ section .data
 arr     dd      99, 15, 204, 185, 564, 0, -200, -123, -1
 
 extern insertion_sort
+extern selection_sort
 
 section .text
 global _start
@@ -11,7 +12,7 @@ _start:
 
     push    9
     push    arr
-    call    insertion_sort
+    call    selection_sort
     mov     eax, 4
 
 last:
