@@ -1,20 +1,24 @@
 section .data
 
-arr     dd      99, 15, 204, 185, 564, 0, -200, -123, -1
+arr     dd      2, 8, 7, 1, 3, 5, 6, 4
+arr2    dd      -2, 4, 2, 7, 3, 1, 2, 9
 
 extern insertion_sort
 extern selection_sort
+;extern quick_sort
 
 section .text
 global _start
 _start:
     mov     ebp, esp
 
-    push    9
-    push    arr
+    mov     rdi, arr
+    mov     rsi, 8
     call    selection_sort
-    mov     eax, 4
 
+    mov     rdi, arr2
+    mov     rsi, 8
+    call    insertion_sort
 last:
     mov     eax, 60
     mov     edi, 0

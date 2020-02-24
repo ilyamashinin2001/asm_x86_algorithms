@@ -1,71 +1,36 @@
-; Insertion sort in C language:
-; void insertionSort(int arr[], int n)  {
-;   int i, key, j;
-;   for (i = 1; i < n; i++) {
-;       key = arr[i];
-;       j = i - 1;
-;       while (j >= 0 && arr[j] > key) {
-;           arr[j + 1] = arr[j];
-;           j = j - 1;
-;       }
-;       arr[j + 1] = key;
-;   }
-;}
-
 ; Arguments:
-; ebp + 8 - an array of nums
-; ebp + 12 - length of the array
-
-section .data
-
-arr     equ     8
-len     equ     12
-key     equ     -16
-
+; rdi - the array
+; rsi - length of the array
 section .text
 global insertion_sort
 insertion_sort:
-    push    ebp
-    mov     ebp, esp
-    push    eax
-    push    ebx
-    push    edi
+    push    r12
+    push    r13
+    mov     r10, 1
 
-    sub     esp, 4
-
-    mov     eax, 1
-    mov     edi, dword [ebp + arr]
 inner_loop:
-    cmp     eax, dword [ebp + len]
+    cmp     r10, rsi
     jge     end_inner_loop
-
-    mov     ebx, dword [edi + eax * 4]
-    mov     dword [ebp + key], ebx
-    mov     ebx, eax
-    dec     ebx
+    mov     r11d, dword [rdi + r10 * 4]
+    mov     r12, r10
+    dec     r12
 
 s_inner_loop:
-    cmp     ebx, 0
+    cmp     r12, 0
     jl      end_s_inner_loop
-    mov     edx, dword [ebp + key]
-    cmp     dword [edi + ebx * 4], edx
+    cmp     dword [rdi + r12 * 4], r11d
     jle     end_s_inner_loop
-
-    mov     edx, dword [edi + ebx * 4]
-    mov     dword [edi + ebx * 4 + 4], edx
-    dec     ebx
+    mov     r13d, dword [rdi + r12 * 4]
+    mov     dword [rdi + r12 * 4 + 4], r13d
+    dec     r12
     jmp     s_inner_loop
 
 end_s_inner_loop:
-    mov     edx, dword [ebp + key]
-    mov     dword [edi + ebx * 4 + 4], edx
-    inc     eax
+    mov     dword [rdi + r12 * 4 + 4], r11d
+    inc     r10
     jmp     inner_loop
 
 end_inner_loop:
-    pop     edi
-    pop     ebx
-    pop     eax
-    mov     esp, ebp
-    pop     ebp
+    pop     r13
+    pop     r12
     ret
