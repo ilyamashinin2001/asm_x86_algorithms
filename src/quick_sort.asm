@@ -1,110 +1,65 @@
-; ebp + 8 - the array
-; ebp + 12 - length of the array
-section .data
-arr     equ     8
-len     equ     12
-
-p       equ     -16
-r       equ     -20
-
 section .text
 global quick_sort
 quick_sort:
-    push    ebp
-    mov     ebp, esp
-    push    eax
-    push    ebx
-    push    esi
-
-    mov     esi, dword [ebp + arr]  ; the array
-
-    mov     ebx, dword [ebp + len]  ; index of the last element
-    dec     ebx
-
-    xor     eax, eax ; index of the first element
-
-    call    quick_recursive
-
-    pop     esi
-    pop     ebx
-    pop     eax
-    mov     esp, ebp
-    pop     ebp
+    mov     rdx, rsi
+    dec     rdx
+    xor     rsi, rsi
+    call    quick_sort_recursion
     ret
 
-global quick_recursive
-quick_recursive:
-    push    ebp
-    mov     ebp, esp
+global quick_sort_recursion
+quick_sort_recursion:
+    cmp     rsi, rdx
+    jge     post
 
-    cmp     eax, ebx
-    jge     post_if
-
-    push    eax
-    push    ebx
     call    partition
-    pop     ebx
-    pop     eax
-    ; q = ecx - index of the pivot
+    push    rax
+    push    rdx
+    dec     rax
+    mov     rdx, rax
+    call    quick_sort_recursion
 
-    push    eax
-    push    ebx
-    mov     ebx, ecx
-    dec     ebx
-    call    quick_recursive
-    pop     ebx
-    pop     eax
-
-    push    eax
-    push    ebx
-    mov     eax, ecx
-    inc     eax
-    call    quick_recursive
-    pop     ebx
-    pop     eax
-
-
-post_if:
-    mov     esp, ebp
-    pop     ebp
+    pop     rdx
+    pop     rax
+    inc     rax
+    mov     rsi, rax
+    call    quick_sort_recursion
+post:
     ret
 
 global partition
 partition:
-    ; ebp + 12 - index of the first element
-    ; ebp + 8 - index of the last element
-    push    ebp
-    mov     ebp, esp
+    push    r12
+    push    r13
+    push    r14
 
-    mov     eax, dword [ebp + 8]
-    mov     ebx, dword [esi + eax * 4]  ; x = A[r]
-    mov     ecx, dword [ebp + 12]
-    dec     ecx                     ; i = p - 1
-
-    mov     edx, dword [ebp + 12]   ; j = p
-    mov     edi, dword [ebp + 8]
-    dec     edi                     ; r - 1
+    mov     r10d, dword [rdi + rdx * 4]
+    mov     r11, rsi
+    dec     r11
+    mov     r12, rsi
+    mov     r13, rdx
+    dec     r13
 inner_loop:
-    cmp     edx, edi
-    jg      end_inner_loop
-    cmp     dword [esi + edx * 4], ebx
-    jg      post_if2
-    inc     ecx
-    mov     eax, dword [esi + ecx * 4]
-    xchg    eax, dword [esi + edx * 4]
-    mov     dword [esi + ecx * 4], eax
-post_if2:
-    inc     edx
+    cmp     r12, r13
+    jg      post_inner_loop
+    mov     r14d, dword [rdi + r12 * 4]
+    cmp     r14, r10
+    jg      post_if
+    inc     r11
+    ; A[i] with A[j]
+    xchg    r14d, dword [rdi + r11 * 4]
+    mov     dword [rdi + r12 * 4], r14d
+post_if:
+    inc     r12
     jmp     inner_loop
+post_inner_loop:
+    mov     r14d, dword [rdi + r11 * 4 + 4]
+    xchg    r14d, dword [rdi + rdx * 4]
+    mov     dword [rdi + r11 * 4 + 4], r14d
+    mov     rax, r11
+    inc     rax
 
-end_inner_loop:
-    inc     ecx
-    mov     eax, dword [ebp + 8]
-
-    mov     ebx, dword [esi + ecx * 4]
-    xchg    ebx, dword [esi + eax * 4]
-    mov     dword [esi + ecx * 4], ebx
-
-    mov     esp, ebp
-    pop     ebp
+    pop     r14
+    pop     r13
+    pop     r12
     ret
