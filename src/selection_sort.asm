@@ -8,7 +8,7 @@ selection_sort:
     push    r13
     push    r14
 
-    mov     r10, 0
+    xor     r10, r10
     mov     r11, rsi
     dec     r11
 inner_loop:
